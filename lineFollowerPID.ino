@@ -6,8 +6,8 @@
 // Class to make robot drives straight
 class motorPID{
   private:
-    float Kp = 5, Ki = 0, Kd = 0;
-    //float Kp = 0.7, Ki = 0.5, Kd = 0.9;
+    float Kp = 0.7, Ki = 0, Kd = 0;
+    //float Kp = 0.5, Ki = 0.01, Kd = 0.5;
     float proportional, integral, derivative;
     int error, lastError = 0, sumError = 0;
   public:
@@ -39,11 +39,11 @@ FalconRobotMotors motors(5, 7, 6, 8);
 FalconRobotLineSensor leftLightSensor(A2);
 FalconRobotLineSensor rightLightSensor(A3);
 // Default values for line sensors
-#define LEFT_INLINE 1005
-#define LEFT_OUTLINE 930
-#define RIGHT_INLINE 1010
-#define RIGHT_OUTLINE 945
-#define DEFAULT_SPEED 250
+#define LEFT_INLINE 1012
+#define LEFT_OUTLINE 952
+#define RIGHT_INLINE 1011
+#define RIGHT_OUTLINE 933
+#define DEFAULT_SPEED 40
 // Line sensors variables
 int rightLightValue, leftLightValue;
 // PID variables
@@ -53,7 +53,7 @@ motorPID *leftMotor;
 /* INITIAL FUNCTION */
 void setup() {
   Serial.begin(9600);
-  delay(5000);
+  delay(100);
 
   rightMotor = new motorPID();
   leftMotor = new motorPID();
@@ -70,6 +70,10 @@ void loop() {
   // Line sensor reading
   leftLightValue = leftLightSensor.read();
   rightLightValue = rightLightSensor.read();
+
+  //Serial.print(leftLightValue);
+  //Serial.print("\t");
+  //Serial.println(rightLightValue);
   
   if(!isInLine()){
     motors.drive(DEFAULT_SPEED, FORWARD);
@@ -81,5 +85,9 @@ void loop() {
     leftMotor->getSpeed(leftLightValue, LEFT_OUTLINE);
     leftMotor->getDirection();
     motors.leftDrive(leftMotor->motorSpeed, leftMotor->motorDirection);
+    Serial.print(rightMotor->motorSpeed);
+    Serial.print("\t");
+    Serial.println(leftMotor->motorSpeed);
   }
+  delay(0);
 }

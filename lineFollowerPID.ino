@@ -25,12 +25,12 @@ FalconRobotMotors motors(5, 7, 6, 8);
 FalconRobotLineSensor rightLightSensor(A0);
 FalconRobotLineSensor middleLightSensor(A1);
 FalconRobotLineSensor leftLightSensor(A2);
-#define rightDefaultInLine 995
-#define rightDefaultOutLine 906
-#define middleDefaultInLine 983 
-#define middleDefaultOutLine 888
-#define leftDefaultInLine 999
-#define leftDefaultOutLine 929
+#define rightDefaultInLine 988
+#define rightDefaultOutLine 912
+#define middleDefaultInLine 985 
+#define middleDefaultOutLine 893
+#define leftDefaultInLine 1000
+#define leftDefaultOutLine 931
 int rightLightValue, middleLightValue, leftLightValue;
 
 /*
@@ -88,12 +88,12 @@ void setup(){
   // Iniciação dos objetos da classe <motorPID> e calibragem de suas respectivas constantes PID
   rightMotor = new motorPID;
   rightMotor->defaultLight = rightDefaultOutLine;
-  rightMotor->Kp = 0.5;
+  rightMotor->Kp = 0.55;
   rightMotor->Ki = 0;
   rightMotor->Kd = 0.1;
   leftMotor = new motorPID;
   leftMotor->defaultLight = leftDefaultOutLine;
-  leftMotor->Kp = 0.5;
+  leftMotor->Kp = 0.55;
   leftMotor->Ki = 0;
   leftMotor->Kd = 0.1;
   // Tempo de espera antes de iniciar a função principal
@@ -116,12 +116,12 @@ void readLightSensors(){
 void readColorSensors(){
   // Leitura
   rightColorSensor.readRedLight(rightRedReading);
-  rightColorSensor.readGreenLight(rightRedReading);
+  rightColorSensor.readGreenLight(rightGreenReading);
   rightColorSensor.readBlueLight(rightBlueReading);
   // Mapeamento
-  rightRedValue = map(rightRedReading,0,3500,0,255);
-  rightGreenValue = map(rightGreenReading,0,3500,0,255);
-  rightBlueValue = map(rightBlueReading,0,3500,0,255);
+  rightRedValue = map(rightRedReading,0,3500,0,3500);
+  rightGreenValue = map(rightGreenReading,0,3500,0,3500);
+  rightBlueValue = map(rightBlueReading,0,3500,0,3500);
 }
 
 /*
@@ -144,6 +144,16 @@ int isInLine(){
   else if(middleInLine){ return 2; }                              // apenas o médio
   else if(leftInLine){ return 3; }                                // apenas o esquerdo
   else{ return 0; }                                               // nenhum
+}
+
+int solveIntersection(){
+  // Variáveis de verificação
+  bool rightInGreen = false;
+  if(rightRedValue >= 5 && rightRedValue <= 10 && rightGreenValue >= 7 && rightGreenValue <= 15 && rightBlueValue >= 5 && rightBlueValue <= 10){ rightInGreen = true; }
+  
+  // Verificação da posição dos sensores de cor em relação à linha verde
+  if(rightInGreen){ return 1; }
+  else{ return 0; }
 }
 
 /*
@@ -181,7 +191,21 @@ void rotate(String orientation){
 */
 void loop(){
   readLightSensors();
-  readColorSensors();
+  /*readColorSensors();
+
+  Serial.print(rightRedValue);
+  Serial.print("\t");
+  Serial.print(rightGreenValue);
+  Serial.print("\t");
+  Serial.println(rightBlueValue);
+  
+  switch(solveIntersection()){
+    case 1:
+      //rotate("to right");
+      motors.stop();
+      delay(70000);
+      break;
+  }*/
 
   switch(isInLine()){
     case 123:
